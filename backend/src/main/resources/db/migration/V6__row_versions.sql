@@ -1,0 +1,3 @@
+ALTER TABLE shifts ADD COLUMN version bigint NOT NULL DEFAULT 0;
+ALTER TABLE jobs ADD COLUMN version bigint NOT NULL DEFAULT 0;
+ALTER TABLE vacation_periods ADD COLUMN version bigint NOT NULL DEFAULT 0;

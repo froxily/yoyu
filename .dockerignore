@@ -1,0 +1,11 @@
+.git
+.github
+.claude
+CLAUDE.md
+.env
+.env.*
+**/node_modules
+backend/target
+backend/src/main/resources/static
+docs
+ops

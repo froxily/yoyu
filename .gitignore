@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+!.env.smtp.example
+backend/src/main/resources/static/
+.claude/
+CLAUDE.md
+ops/

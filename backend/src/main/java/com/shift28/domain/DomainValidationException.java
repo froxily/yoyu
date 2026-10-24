@@ -1,0 +1,9 @@
+package com.shift28.domain;
+
+public class DomainValidationException extends RuntimeException {
+
+	public DomainValidationException(String message) {
+		super(message);
+	}
+
+}

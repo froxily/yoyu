@@ -1,0 +1,164 @@
+#root:empty {
+  position: fixed;
+  inset: 0;
+  background: #0d7771;
+}
+
+.yoyu-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #0d7771;
+  color: #fff;
+  animation: yoyu-splash-exit 1.2s both;
+}
+
+.yoyu-splash-stage {
+  position: relative;
+  width: min(100%, 28rem);
+  height: 100%;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+
+.yoyu-splash-brand {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.yoyu-splash-kanji {
+  position: relative;
+  padding-left: 0.13em;
+  font-family: 'Noto Serif JP', 'Yu Mincho', 'YuMincho', 'Hiragino Mincho ProN', serif;
+  font-size: 20cqw;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: 0.13em;
+  animation: yoyu-splash-kanji-in 650ms 100ms both cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.yoyu-splash-name {
+  position: relative;
+  margin-top: 7px;
+  padding-left: 0.12em;
+  font-size: 7cqw;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  animation: yoyu-splash-name-in 500ms 300ms both cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.yoyu-splash-ripple {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 68cqw;
+  height: 68cqw;
+  border: 1px solid #ffffff10;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: yoyu-splash-ripple-in 850ms 250ms both ease-out;
+}
+
+.yoyu-splash-ripple-two {
+  width: 88cqw;
+  height: 88cqw;
+  border-color: #ffffff07;
+  animation-delay: 350ms;
+}
+
+.yoyu-splash-bottom {
+  position: absolute;
+  bottom: max(8%, calc(env(safe-area-inset-bottom, 0px) + 24px));
+  width: 100%;
+  padding-inline: 16px;
+  color: #e6f2f0;
+  font-size: clamp(12px, 3.4cqw, 13px);
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+  animation: yoyu-splash-name-in 300ms 150ms both;
+}
+
+.yoyu-splash-line {
+  width: 23px;
+  height: 1px;
+  margin: 19px auto 0;
+  background: #ffffff5c;
+}
+
+@keyframes yoyu-splash-kanji-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes yoyu-splash-name-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes yoyu-splash-ripple-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.82);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.65;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+@keyframes yoyu-splash-exit {
+  0%,
+  76% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes yoyu-splash-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yoyu-splash {
+    animation: yoyu-splash-fade 150ms both;
+  }
+
+  .yoyu-splash-kanji,
+  .yoyu-splash-name,
+  .yoyu-splash-ripple,
+  .yoyu-splash-bottom {
+    animation: none;
+  }
+
+  .yoyu-splash-ripple {
+    display: none;
+  }
+}

@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - run: chmod +x mvnw
+      - run: ./mvnw -B verify
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Check the PWA files
+        working-directory: backend/src/main/resources/static
+        run: |
+          for file in index.html manifest.webmanifest sw.js pwa-192x192.png pwa-512x512.png maskable-icon-512x512.png; do
+            test -s "$file" || { echo "missing $file"; exit 1; }
+          done
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker compose up -d --build --wait
+      - run: curl -fsS http://localhost:8028/api/health
+      - run: curl -fsS http://localhost:8028/history | grep -q '<div id="root">'
+      - if: failure()
+        run: docker compose logs app
+      - if: always()
+        run: docker compose down -v
+
+  deploy:
+    needs: [backend, frontend, compose]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AZURE_WEBAPP_NAME != ''
+    runs-on: ubuntu-latest
+    concurrency: deploy
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - run: npm ci && npm run build
+        working-directory: frontend
+      - run: chmod +x mvnw && ./mvnw -B -Dmaven.test.skip=true package && cp target/shift28-*.jar ../app.jar
+        working-directory: backend
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - id: deploy
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          package: app.jar
+      - name: Wait for the app to answer
+        run: curl -fsS --retry 12 --retry-delay 15 --retry-all-errors "${{ steps.deploy.outputs.webapp-url }}/api/health"

@@ -1,0 +1,11 @@
+services:
+  app:
+    env_file:
+      - path: .env.smtp
+        required: true
+    environment:
+      MAIL_HOST: !reset null
+      MAIL_PORT: !reset null
+      MAIL_STARTTLS: !reset null
+      MAIL_FROM: !reset null
+      OTP_SECRET: !reset null
